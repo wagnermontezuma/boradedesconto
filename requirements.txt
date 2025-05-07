@@ -1,0 +1,21 @@
+# Biblioteca principal para API REST
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==2.6.3
+
+# Coleta de dados
+playwright==1.44.0
+httpx==0.26.0
+tenacity==8.2.3
+beautifulsoup4==4.12.3
+
+# Banco de dados
+aiosqlite==0.19.0
+sqlalchemy==2.0.25
+
+# Agendamento
+apscheduler==3.10.4
+
+# Utilidades
+python-dotenv==1.0.1
+loguru==0.7.2 

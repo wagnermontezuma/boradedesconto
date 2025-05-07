@@ -1,0 +1,3 @@
+"""
+Pacote Scraper do BoraDeDesconto.
+""" 

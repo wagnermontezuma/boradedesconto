@@ -1,0 +1,3 @@
+"""
+Pacote API do BoraDeDesconto.
+""" 

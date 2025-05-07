@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node.js
+node_modules/
+.npm
+.next/
+out/
+.nuxt/
+.cache/
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ambiente virtual
+venv/
+ENV/
+
+# Banco de dados
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Arquivos de log
+logs/
+*.log
+
+# Arquivos temporários
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos secretos
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Imagens de teste geradas pelo scraper
+scraper/*.png
+!docs/*.png
+
+# Dados coletados pelo scraper
+scraper/dados/*.json
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
