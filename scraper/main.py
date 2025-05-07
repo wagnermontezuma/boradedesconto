@@ -165,6 +165,11 @@ async def scrape_amazon(keyword="ofertas do dia", max_pages=2):
                         if not url and asin:
                             url = f"https://www.amazon.com.br/dp/{asin}"
                             
+                        # Adiciona o ID de afiliado "wagnermontezu-20" aos links da Amazon
+                        if url and "amazon.com.br" in url and "tag=" not in url:
+                            separator = "&" if "?" in url else "?"
+                            url = f"{url}{separator}tag=wagnermontezu-20"
+                            
                         print(f"URL: {url[:50]}...")
                         
                         # Extrai preço atual

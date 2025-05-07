@@ -81,7 +81,15 @@ async def redirect_offer(offer_id: int, request: Request):
         referer=referer
     )
     
-    return RedirectResponse(url=offer["url"], status_code=307)
+    # Obtém a URL para redirecionamento
+    redirect_url = offer["url"]
+    
+    # Adiciona o ID de afiliado para links da Amazon
+    if "amazon.com.br" in redirect_url and "tag=" not in redirect_url:
+        separator = "&" if "?" in redirect_url else "?"
+        redirect_url = f"{redirect_url}{separator}tag=wagnermontezu-20"
+    
+    return RedirectResponse(url=redirect_url, status_code=307)
 
 
 # Endpoint para consultar estatísticas de cliques
