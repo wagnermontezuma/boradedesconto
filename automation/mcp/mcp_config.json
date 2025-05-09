@@ -1,0 +1,12 @@
+{
+  "outputDir": "C:\\Users\\monte\\Desktop\\Projetos\\boradedesconto\\automation\\mcp\\results",
+  "browser": "chromium",
+  "headless": false,
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "baseUrl": "http://localhost:3000",
+  "apiUrl": "http://localhost:8000",
+  "recordVideo": false
+}
