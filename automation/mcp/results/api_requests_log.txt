@@ -1,0 +1,2 @@
+2025-05-09T13:31:48.543Z - GET: http://localhost:8000/offers
+2025-05-09T13:31:48.545Z - GET: http://localhost:8000/stats/clicks?days=30

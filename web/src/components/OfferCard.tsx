@@ -1,5 +1,7 @@
 import React from 'react';
+import Image from 'next/image';
 import { Offer } from '../lib/useOffers';
+import ImageWithFallback from './ImageWithFallback';
 
 interface OfferCardProps {
   offer: Offer;
@@ -41,16 +43,17 @@ const OfferCard: React.FC<OfferCardProps> = ({ offer }) => {
     default: '/merchants/default.svg',
   };
 
-  const logoSrc = merchantLogos[merchant] || merchantLogos.default;
+  const logoSrc = merchantLogos[merchant.toLowerCase()] || merchantLogos.default;
 
   // Gera uma URL para a imagem do produto com base no título ou ID
   const getProductImage = () => {
     if (merchant === 'amazon' && external_id) {
-      // Usa a API de imagens da Amazon
-      return `https://images-na.ssl-images-amazon.com/images/P/${external_id}.jpg`;
+      // Amazon usa vários formatos de imagem, alguns têm mudado com o tempo
+      // Tentamos o formato mais recente primeiro
+      return `https://m.media-amazon.com/images/I/${external_id}.jpg`;
     }
     
-    // Caso não tenha ASIN válido, usa imagens baseadas no título do produto
+    // Caso não tenha ASIN válido ou tenha dado erro, usa imagens baseadas no título do produto
     const lowerTitle = title.toLowerCase();
     
     if (lowerTitle.includes('smartphone') || lowerTitle.includes('galaxy') || lowerTitle.includes('iphone')) {
@@ -95,6 +98,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ offer }) => {
   };
 
   const productImage = getProductImage();
+  const fallbackImage = "https://via.placeholder.com/300x200?text=Produto";
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -105,19 +109,26 @@ const OfferCard: React.FC<OfferCardProps> = ({ offer }) => {
 
       {/* Imagem do produto */}
       <div className="h-48 bg-gray-200 relative">
-        <img
-          src={productImage}
-          alt={truncatedTitle}
-          className="w-full h-full object-contain p-2"
-          onError={(e) => {
-            // Fallback para imagem padrão em caso de erro
-            (e.target as HTMLImageElement).src = "https://via.placeholder.com/300x200?text=Produto";
-          }}
-        />
+        <div className="w-full h-full relative">
+          <ImageWithFallback
+            src={productImage}
+            fallbackSrc={fallbackImage}
+            alt={truncatedTitle}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-contain p-2"
+          />
+        </div>
 
         {/* Logo do merchant */}
         <div className="absolute bottom-2 left-2 bg-white rounded-full p-1 h-8 w-8 flex items-center justify-center">
-          <img src={logoSrc} alt={merchant} className="h-6 w-6" />
+          <Image
+            src={logoSrc}
+            alt={merchant}
+            width={24}
+            height={24}
+            className="h-6 w-6"
+          />
         </div>
       </div>
 

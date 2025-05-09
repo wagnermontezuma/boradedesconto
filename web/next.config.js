@@ -2,6 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    domains: [
+      'images-na.ssl-images-amazon.com',
+      'm.media-amazon.com',
+      'via.placeholder.com'
+    ],
+    unoptimized: process.env.NODE_ENV === 'development',
+  },
   async rewrites() {
     return [
       {

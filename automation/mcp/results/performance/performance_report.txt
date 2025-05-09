@@ -1,0 +1,20 @@
+
+=================================
+Relatório de Desempenho BoraDeDesconto
+=================================
+Data: 2025-05-09T13:31:51.579Z
+
+Tempos de resposta:
+------------------
+1. API /offers: 1ms
+2. API /stats/clicks: 1ms
+3. Frontend página inicial: 0ms
+4. Frontend filtro por merchant: 1016ms
+5. Frontend página de estatísticas: 0ms
+
+Análise:
+-------
+- Tempo médio API: 1ms
+- Tempo médio Frontend: 339ms
+
+=================================

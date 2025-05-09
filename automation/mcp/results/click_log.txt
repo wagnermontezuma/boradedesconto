@@ -1,0 +1,5 @@
+2025-05-09T13:31:15.416Z - Clique: button[value="amazon"]
+2025-05-09T13:31:16.422Z - Clique: .bg-white.rounded-lg.shadow-md.overflow-hidden a
+2025-05-09T13:31:36.841Z - Clique: button[value="amazon"]
+2025-05-09T13:31:38.347Z - Clique: button[value="mercadolivre"]
+2025-05-09T13:31:50.562Z - Clique: button[value="amazon"]

@@ -1,0 +1,14 @@
+2025-05-09T13:31:36.835Z - 1. Navegando para a página inicial
+2025-05-09T13:31:36.838Z - 2. Obtendo ofertas iniciais
+2025-05-09T13:31:36.839Z -    - Total de ofertas: 3
+2025-05-09T13:31:36.840Z -    - Ofertas da Amazon: 2
+2025-05-09T13:31:36.840Z -    - Ofertas do Mercado Livre: 1
+2025-05-09T13:31:36.840Z - 3. Filtrando por ofertas da Amazon
+2025-05-09T13:31:38.346Z -    - Ofertas da Amazon após filtro: 2
+2025-05-09T13:31:38.346Z - ✓ Ofertas da Amazon exibidas corretamente
+2025-05-09T13:31:38.347Z - 4. Filtrando por ofertas do Mercado Livre
+2025-05-09T13:31:39.860Z -    - Ofertas do Mercado Livre após filtro: 1
+2025-05-09T13:31:39.862Z - ✓ Ofertas do Mercado Livre exibidas corretamente
+2025-05-09T13:31:39.862Z - 5. Navegando para a página de estatísticas
+2025-05-09T13:31:39.863Z - 6. Teste de integração concluído
+2025-05-09T13:31:39.864Z - ✓ Navegador fechado

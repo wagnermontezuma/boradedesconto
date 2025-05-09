@@ -1,0 +1,6 @@
+timestamp,operation,duration_ms
+2025-05-09T13:31:48.544Z,"API /offers",1
+2025-05-09T13:31:48.545Z,"API /stats/clicks",1
+2025-05-09T13:31:48.547Z,"Frontend página inicial",0
+2025-05-09T13:31:51.577Z,"Frontend filtro por merchant",1016
+2025-05-09T13:31:51.578Z,"Frontend página de estatísticas",0
