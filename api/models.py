@@ -96,35 +96,83 @@ async def init_db():
 
 
 # Função para inserir ou atualizar ofertas
-async def upsert_offer(offer: Offer):
+async def upsert_offer(offer):
     """
-    Insere ou atualiza uma oferta no banco.
-    Usa a restrição UNIQUE para garantir não duplicação.
-    """
-    db_path = await get_db_path()
+    Insere ou atualiza uma oferta no banco de dados.
     
-    async with aiosqlite.connect(db_path) as db:
-        await db.execute("""
-        INSERT INTO offers (merchant, external_id, title, url, price, discount_pct, ts)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(merchant, external_id) 
-        DO UPDATE SET 
-            title=excluded.title,
-            url=excluded.url,
-            price=excluded.price,
-            discount_pct=excluded.discount_pct,
-            ts=excluded.ts
-        """, (
-            offer.merchant,
-            offer.external_id,
-            offer.title,
-            offer.url,
-            offer.price,
-            offer.discount_pct,
-            offer.ts.isoformat()
-        ))
+    Args:
+        offer: Objeto da oferta (de scraper.models.Offer)
+    
+    Returns:
+        int: ID da oferta inserida/atualizada
+    """
+    async with aiosqlite.connect(await get_db_path()) as db:
+        db.row_factory = sqlite3.Row
         
-        await db.commit()
+        # Verifica se a oferta já existe
+        query = """
+            SELECT id FROM offers 
+            WHERE merchant = ? AND external_id = ?
+        """
+        
+        cursor = await db.execute(query, (offer.merchant, offer.external_id))
+        existing = await cursor.fetchone()
+        
+        if hasattr(offer, 'timestamp'):
+            # Converte o timestamp do scraper para o formato esperado
+            ts = offer.timestamp
+        else:
+            # Usa o timestamp atual
+            ts = datetime.datetime.utcnow().isoformat()
+        
+        if existing:
+            # Atualiza a oferta existente
+            update_query = """
+                UPDATE offers SET
+                title = ?,
+                url = ?,
+                price = ?,
+                discount_pct = ?,
+                ts = ?
+                WHERE id = ?
+            """
+            
+            await db.execute(
+                update_query,
+                (
+                    offer.title,
+                    offer.url,
+                    offer.price,
+                    offer.discount_pct,
+                    ts,
+                    existing['id']
+                )
+            )
+            
+            await db.commit()
+            return existing['id']
+        else:
+            # Insere nova oferta
+            insert_query = """
+                INSERT INTO offers (merchant, external_id, title, url, price, discount_pct, ts)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """
+            
+            cursor = await db.execute(
+                insert_query,
+                (
+                    offer.merchant,
+                    offer.external_id,
+                    offer.title,
+                    offer.url,
+                    offer.price,
+                    offer.discount_pct,
+                    ts
+                )
+            )
+            
+            await db.commit()
+            return cursor.lastrowid
 
 
 # Função para registrar clique na oferta

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div data-component-type="s-search-result" data-asin="ASIN001">
+    <h2><a href="/dp/ASIN001/ref=xyz"><span>Título do Produto 1</span></a></h2>
+    <div class="a-price"><span class="a-offscreen">R$ 99,90</span></div>
+    <div class="a-text-price"><span class="a-offscreen">R$ 199,80</span></div> <!-- Preço original -->
+  </div>
+  <div data-component-type="s-search-result" data-asin="ASIN002">
+    <h2><a href="/dp/ASIN002/ref=abc"><span>Título do Produto 2 Super Desconto</span></a></h2>
+    <div class="a-price">
+        <span class="a-price-whole">145</span><span class="a-price-symbol">R$</span><span class="a-price-fraction">99</span>
+    </div>
+    <!-- Sem preço original, desconto será 0 ou calculado com base no preço se não houver original -->
+  </div>
+  <div data-component-type="s-search-result" data-asin="ASIN003">
+    <!-- Produto sem preço, deve ser ignorado ou tratado -->
+    <h2><a href="/dp/ASIN003"><span>Produto Sem Preço</span></a></h2>
+  </div>
+</body>
+</html> 

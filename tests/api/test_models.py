@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 import asyncio
 from datetime import datetime
+from pydantic import ValidationError
 
 # Adiciona o diretório parent ao path
 parent_dir = Path(__file__).resolve().parent.parent.parent
@@ -14,6 +15,101 @@ sys.path.append(str(parent_dir))
 
 # Import dos módulos da API
 from api import models
+
+# Ajustar o PYTHONPATH para incluir o diretório raiz do projeto 'boradedesconto'
+# Isso permite que 'from api.models import Offer, OfferClick' funcione
+project_root = Path(__file__).resolve().parent.parent.parent # Sobe três níveis: tests/api -> tests -> boradedesconto -> raiz do projeto (onde está a pasta 'api')
+sys.path.insert(0, str(project_root))
+
+from api.models import Offer, OfferClick # Agora isso deve funcionar
+
+# Dados de exemplo para testes
+VALID_OFFER_DATA = {
+    "merchant": "amazon",
+    "external_id": "B08X7JX9MB",
+    "title": "Smartphone Samsung Galaxy A54",
+    "url": "https://www.amazon.com.br/dp/B08X7JX9MB",
+    "price": 1899.99,
+    "discount_pct": 25,
+}
+
+VALID_OFFER_CLICK_DATA = {
+    "offer_id": 1,
+    "user_agent": "test-agent",
+    "referer": "test-referer",
+}
+
+class TestOfferModel:
+    def test_create_valid_offer(self):
+        offer = Offer(**VALID_OFFER_DATA)
+        assert offer.merchant == VALID_OFFER_DATA["merchant"]
+        assert offer.external_id == VALID_OFFER_DATA["external_id"]
+        assert offer.title == VALID_OFFER_DATA["title"]
+        assert offer.url == VALID_OFFER_DATA["url"]
+        assert offer.price == VALID_OFFER_DATA["price"]
+        assert offer.discount_pct == VALID_OFFER_DATA["discount_pct"]
+        assert offer.id is None  # ID é gerado pelo banco, não no modelo Pydantic inicialmente
+        assert isinstance(offer.ts, datetime)
+
+    def test_offer_missing_required_fields(self):
+        incomplete_data = VALID_OFFER_DATA.copy()
+        del incomplete_data["title"] # 'title' é obrigatório
+        with pytest.raises(ValidationError):
+            Offer(**incomplete_data)
+
+    def test_offer_invalid_price_type(self):
+        invalid_data = VALID_OFFER_DATA.copy()
+        invalid_data["price"] = "not_a_float"
+        with pytest.raises(ValidationError):
+            Offer(**invalid_data)
+
+    def test_offer_invalid_discount_type(self):
+        invalid_data = VALID_OFFER_DATA.copy()
+        invalid_data["discount_pct"] = "not_an_int"
+        with pytest.raises(ValidationError):
+            Offer(**invalid_data)
+
+    def test_offer_discount_out_of_bounds(self):
+        # Supondo que discount_pct deva estar entre 0-100,
+        # mas o modelo Pydantic não tem essa validação explícita.
+        # Este teste passaria, a menos que adicionemos validação no modelo.
+        # Por agora, vamos testar a criação com valores extremos.
+        data_low = VALID_OFFER_DATA.copy()
+        data_low["discount_pct"] = -10
+        offer_low = Offer(**data_low)
+        assert offer_low.discount_pct == -10
+
+        data_high = VALID_OFFER_DATA.copy()
+        data_high["discount_pct"] = 110
+        offer_high = Offer(**data_high)
+        assert offer_high.discount_pct == 110
+
+
+class TestOfferClickModel:
+    def test_create_valid_offer_click(self):
+        click = OfferClick(**VALID_OFFER_CLICK_DATA)
+        assert click.offer_id == VALID_OFFER_CLICK_DATA["offer_id"]
+        assert click.user_agent == VALID_OFFER_CLICK_DATA["user_agent"]
+        assert click.referer == VALID_OFFER_CLICK_DATA["referer"]
+        assert click.id is None # ID é gerado pelo banco
+        assert isinstance(click.ts, datetime)
+
+    def test_offer_click_minimal_valid(self):
+        # Somente offer_id é estritamente obrigatório na definição do modelo
+        click = OfferClick(offer_id=1)
+        assert click.offer_id == 1
+        assert click.user_agent is None
+        assert click.referer is None
+        assert isinstance(click.ts, datetime)
+
+
+    def test_offer_click_missing_offer_id(self):
+        with pytest.raises(ValidationError):
+            OfferClick(user_agent="some-agent") # offer_id faltando
+
+    def test_offer_click_invalid_offer_id_type(self):
+        with pytest.raises(ValidationError):
+            OfferClick(offer_id="not_an_int")
 
 
 @pytest.fixture

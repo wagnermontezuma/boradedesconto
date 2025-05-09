@@ -84,3 +84,43 @@ def test_get_random_headers():
     # (probabilidade muito baixa de serem iguais)
     headers2 = get_random_headers()
     assert headers != headers2 
+
+class TestScraperUtils:
+    def test_format_price(self):
+        assert format_price("R$ 1.234,56") == 1234.56
+        assert format_price("1.234,56") == 1234.56
+        assert format_price("1234.56") == 1234.56 # Ponto como separador decimal
+        assert format_price("R$123,45") == 123.45
+        assert format_price("R$ 123") == 123.0
+        assert format_price("123") == 123.0
+        assert format_price("Preço: 50,25") == 50.25
+        assert format_price("Apenas 199.99 !") == 199.99
+        assert format_price("Valor R$33,33 com taxas") == 33.33
+        assert format_price("Gratuito") == 0.0 # Ou como for definido para gratuito
+        assert format_price("Indisponível") == 0.0 # Ou como for definido
+        assert format_price("") == 0.0
+        assert format_price(None) == 0.0
+        assert format_price("R$ 1.000,00") == 1000.00
+        assert format_price("1,000.50") == 1000.50 # Milhar com vírgula, decimal com ponto
+
+    def test_calculate_discount(self):
+        assert calculate_discount(100.0, 80.0) == 20
+        assert calculate_discount(200.0, 150.0) == 25
+        assert calculate_discount(50.0, 50.0) == 0
+        assert calculate_discount(100.0, 120.0) == 0 # Preço atual maior, sem desconto
+        assert calculate_discount(100.0, 0.0) == 100 # Desconto total
+        with pytest.raises(ValueError): # Preço original não pode ser zero ou negativo se o preço atual for positivo
+            calculate_discount(0.0, 50.0)
+        assert calculate_discount(0.0, 0.0) == 0 # Ambos zero, sem desconto
+        assert calculate_discount(100, None) == 0 # Preço atual None
+        assert calculate_discount(None, 50) == 0 # Preço original None
+        assert calculate_discount(None, None) == 0 # Ambos None
+
+    def test_get_random_headers(self):
+        headers1 = get_random_headers()
+        headers2 = get_random_headers()
+        assert "User-Agent" in headers1
+        assert "Accept-Language" in headers1
+        # É estatisticamente improvável que dois UAs sejam iguais, mas não garantido
+        # Apenas verifica se a função retorna um dict com as chaves esperadas
+        assert len(headers1["User-Agent"]) > 0 

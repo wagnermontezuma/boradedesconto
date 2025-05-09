@@ -1,185 +1,170 @@
-# BoraDeDesconto - Plataforma de Ofertas em Tempo Quase-Real
+# BoraDeDesconto 🔥
 
-Agregador de ofertas de e-commerces que coleta promoções, armazena em SQLite e apresenta em interface Next.js. MVP 100% user-space, sem dependências de root ou Docker.
+Sistema de coleta e exibição de ofertas em tempo quase-real dos principais e-commerces, construído com Python e Next.js.
 
-## Visão Geral
+![BoraDeDesconto](https://img.shields.io/badge/BoraDeDesconto-v1.0.0-orange)
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Next.js](https://img.shields.io/badge/Next.js-13.x-black)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104.x-teal)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC)
 
-![Arquitetura](./docs/arquitetura.png)
+## 📋 Visão Geral
 
-```
-┌────────────┐      APScheduler       ┌────────────┐
-│  Scheduler │ ────────►────────────► │  Scraper   │
-└────────────┘  dispara jobs (1h)     └─────┬──────┘
-                                            │ escreve ofertas
-                                            ▼
-                                       ┌──────────┐
-                                       │ SQLite   │
-                                       └────┬─────┘
-                                            │ lê
-┌────────────┐      HTTP (localhost)        ▼
-│  Next.js   │ ◄─────────────────────────┌──────────┐
-│  Frontend  │         JSON              │ FastAPI  │
-└────────────┘                           └──────────┘
-```
+O BoraDeDesconto é um agregador de ofertas que utiliza web scraping para coletar ofertas em tempo quase-real dos principais e-commerces brasileiros, como Amazon e Mercado Livre. O sistema permite filtrar ofertas por loja e porcentagem de desconto, além de fornecer estatísticas de cliques para análise de desempenho.
 
-## Componentes
+### 🌟 Principais Recursos
 
-- **Scraper**: Python 3.12, Playwright 1.44, httpx
-- **Agendador**: APScheduler 3.x
-- **Banco**: SQLite 3 (WAL mode)
-- **API**: FastAPI + Uvicorn
-- **UI**: Next.js 15, Tailwind CSS
-- **Gerência**: systemd-user services
+- **Scraping em Tempo Quase-Real**: Coleta de ofertas da Amazon e Mercado Livre
+- **Filtros de Ofertas**: Filtragem por loja e porcentagem de desconto
+- **UI Responsiva**: Interface amigável para desktop e mobile
+- **Analytics de Cliques**: Registro e visualização de estatísticas de cliques
+- **API Documentada**: API RESTful completa documentada com Swagger/OpenAPI
 
-## Instalação
+## 🚀 Começando
 
-### Requisitos
+### Pré-requisitos
 
-- Python 3.12+
-- Node.js 20+
-- Ambiente Linux com systemd (Bazzite OS testado)
+- Python 3.8 ou superior
+- Node.js 14 ou superior
+- npm ou yarn
 
-### Configuração
+### Instalação
 
-```bash
-# Clone o repositório
-git clone https://github.com/usuario/boradedesconto.git
-cd boradedesconto
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/boradedesconto.git
+   cd boradedesconto
+   ```
 
-# Ambiente Python
-python -m venv env
-source env/bin/activate
-pip install -r requirements.txt
-playwright install chromium
+2. Instale as dependências do backend:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# Node.js
-cd web
-npm install
-cd ..
+3. Instale as dependências do frontend:
+   ```bash
+   cd web
+   npm install
+   # ou
+   yarn install
+   ```
 
-# Inicializa o banco
-python -c "import asyncio; from api.models import init_db; asyncio.run(init_db())"
-```
+4. Inicialize o banco de dados (opcional, é criado automaticamente na primeira execução):
+   ```bash
+   cd api
+   python init_db.py
+   ```
 
-### Início manual (desenvolvimento)
+### Execução
 
-```bash
-# Terminal 1: API
-source env/bin/activate
-cd api
-uvicorn app:app --reload --port 8000
+1. Inicie a API backend:
+   ```bash
+   cd api
+   python -m app
+   ```
 
-# Terminal 2: Frontend
-cd web
-npm run dev
+2. Inicie o frontend Next.js:
+   ```bash
+   cd web
+   npm run dev
+   # ou
+   yarn dev
+   ```
 
-# Terminal 3: Scraper (execução única)
-source env/bin/activate
-cd scraper
-python main.py
-```
+3. Execute o scraper para coletar ofertas:
+   ```bash
+   cd scraper
+   python main.py
+   ```
 
-### Serviços (produção)
+4. Acesse o BoraDeDesconto em seu navegador:
+   - Frontend: http://localhost:3000
+   - API Docs: http://localhost:8000/docs
 
-```bash
-# Instala e habilita os serviços do systemd-user
-./scripts/install-services.sh
-
-# Inicia os serviços
-systemctl --user start deals-api.service
-systemctl --user start deals-scraper.service
-
-# Verifica status
-systemctl --user status deals-api.service
-```
-
-## Uso
-
-- API: http://localhost:8000/docs
-- Frontend: http://localhost:3000
-
-## Endpoints API
-
-| Método | Rota           | Descrição                                             |
-| ------ | -------------- | ----------------------------------------------------- |
-| GET    | /offers        | Lista ofertas com filtros (merchant, min_discount...) |
-| GET    | /offers/{id}   | Detalhe de uma oferta                                 |
-| GET    | /go/{id}       | Registra clique e redireciona (307)                   |
-
-## Desenvolvimento
-
-### Estrutura de Diretórios
+## 📚 Estrutura do Projeto
 
 ```
 boradedesconto/
-├── api/
-│   ├── app.py           # FastAPI
-│   ├── models.py        # SQLite + funções DB
-│   └── deals.db         # Banco gerado
-├── scraper/
-│   ├── main.py          # Scraper principal
-│   ├── scheduler.py     # APScheduler
-│   └── utils.py         # Funções utilitárias
-├── web/
-│   ├── src/
-│   │   ├── pages/
-│   │   ├── components/
-│   │   └── lib/
-│   ├── next.config.js
-│   └── package.json
-├── scripts/
-│   └── install-services.sh # Script de instalação
-└── requirements.txt
+├── api/              # API FastAPI
+│   ├── app.py        # Aplicação principal da API
+│   ├── models.py     # Modelos e funções de banco de dados
+│   └── deals.db      # Banco de dados SQLite
+├── scraper/          # Scrapers para diferentes e-commerces
+│   ├── main.py       # Orquestrador principal de scraping
+│   └── dados/        # Dados coletados (backup)
+├── web/              # Frontend Next.js
+│   ├── src/          # Código-fonte do frontend
+│   │   ├── pages/    # Páginas da aplicação
+│   │   ├── components/ # Componentes reutilizáveis
+│   │   └── lib/      # Bibliotecas e hooks
+│   └── public/       # Ativos estáticos
+└── memory-bank/      # Documentação do projeto
 ```
 
-## Licença
+## 🛠️ Componentes do Sistema
 
-MIT 
+### Backend (API)
 
-## Testes Automatizados
+- **Framework**: FastAPI
+- **Banco de Dados**: SQLite (simples e sem servidor)
+- **Documentação**: Swagger/OpenAPI integrado
+- **Endpoint Principal**: `/offers` para listar ofertas
+- **Analytics**: `/go/{offer_id}` para redirecionar e registrar cliques
 
-O projeto inclui testes automatizados para garantir a qualidade e funcionamento correto das funcionalidades. Os testes estão organizados por módulo:
+### Frontend
 
-### Testes do Scraper
+- **Framework**: Next.js
+- **Estilização**: Tailwind CSS
+- **Gerenciamento de Estado**: React Hooks (SWR para fetching)
+- **Páginas**: Principal (ofertas) e Estatísticas
 
-- **Tests de Utilitários** (`tests/scraper/test_utils.py`): Testa as funções utilitárias como cálculo de desconto, formatação de preços e geração de headers.
+### Scraper
 
-- **Testes de Modelos** (`tests/scraper/test_models.py`): Testa as classes de dados e funções de persistência do scraper.
+- **Bibliotecas**: Playwright para automação de navegador
+- **Merchants Suportados**: Amazon e Mercado Livre
+- **Banco de Dados**: Armazena no SQLite via API
+- **Agendamento**: APScheduler para coleta periódica
 
-- **Testes de Scrapers** (`tests/scraper/test_scrapers.py`): Testa as funções de extração de ofertas dos sites.
+## 📊 Análise de Cliques
 
-### Testes da API
+O sistema registra cada clique em uma oferta. Para acessar as estatísticas:
+1. Clique no botão "Estatísticas" no canto superior direito da página principal
+2. Visualize os cliques por oferta, com opções de filtro por período
 
-- **Testes de Endpoints** (`tests/api/test_api.py`): Testa os endpoints da API, incluindo a funcionalidade de redirecionamento e estatísticas de cliques.
+## 🔍 Uso Avançado
 
-- **Testes de Modelos** (`tests/api/test_models.py`): Testa a camada de dados da API, incluindo funções de CRUD e estatísticas.
+### Filtragem de Ofertas
 
-## Executando os Testes
+Use os filtros na interface para:
+- Escolher uma loja específica (Amazon, Mercado Livre, etc.)
+- Definir um desconto mínimo (%)
+- Ordenar ofertas (implementação futura)
 
-Para executar todos os testes:
+### API Direct Access
 
-```bash
-pytest
-```
+Você pode acessar a API diretamente:
+- Listar ofertas: `GET /offers?merchant=amazon&min_discount=20`
+- Detalhes de uma oferta: `GET /offers/42`
+- Estatísticas de cliques: `GET /stats/clicks?days=7`
 
-Para executar testes específicos:
+## 🤝 Contribuindo
 
-```bash
-# Executar testes do scraper
-pytest tests/scraper/
+Contribuições são bem-vindas! Para contribuir:
 
-# Executar testes da API
-pytest tests/api/
+1. Faça o fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-# Executar um arquivo de teste específico
-pytest tests/scraper/test_utils.py
+## 📜 Licença
 
-# Executar um teste específico
-pytest tests/scraper/test_utils.py::test_calculate_discount
-```
+Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para mais detalhes.
 
-Para executar os testes com saída detalhada:
+## 📞 Contato
 
-```bash
-pytest -xvs
-``` 
+Projeto criado por Seu Nome - [seu-email@example.com](mailto:seu-email@example.com)
+
+---
+
+⭐️ BoraDeDesconto - Economize ainda mais com as melhores ofertas! ⭐️ 
